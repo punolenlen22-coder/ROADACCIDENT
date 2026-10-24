@@ -1,23 +1,66 @@
 /* =========================================================
-   RACC ANALYTICS DASHBOARD - WHITE & PURPLE THEME
+   RACC ANALYTICS DASHBOARD
+   WHITE + PURPLE MODERN THEME
    ========================================================= */
 
 
 /* =========================================================
-   GLOBAL PAGE
+   COLOR VARIABLES
+   ========================================================= */
+
+:root {
+    --purple-950: #3b0764;
+    --purple-900: #4c1d95;
+    --purple-800: #581c87;
+    --purple-700: #6b21a8;
+    --purple-600: #7c3aed;
+    --purple-500: #8b5cf6;
+    --purple-400: #a78bfa;
+    --purple-300: #c4b5fd;
+    --purple-200: #ddd6fe;
+    --purple-100: #ede9fe;
+    --purple-50: #f5f3ff;
+
+    --white: #ffffff;
+
+    --background: #faf9ff;
+    --text: #2e1065;
+    --text-muted: #6b21a8;
+
+    --border: #ddd6fe;
+    --shadow: rgba(76, 29, 149, 0.10);
+}
+
+
+/* =========================================================
+   GLOBAL
    ========================================================= */
 
 .stApp {
-    background-color: #faf9ff;
+    background-color: var(--background) !important;
+}
+
+[data-testid="stAppViewContainer"] {
+    background-color: var(--background) !important;
+}
+
+[data-testid="stMain"] {
+    background-color: var(--background) !important;
+}
+
+.main {
+    background-color: var(--background) !important;
 }
 
 .block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 3rem;
-    max-width: 1450px;
+    padding-top: 1.5rem !important;
+    padding-bottom: 3rem !important;
+    max-width: 1450px !important;
 }
 
-html, body, [class*="css"] {
+html,
+body,
+[class*="css"] {
     font-family: "Segoe UI", Arial, sans-serif;
 }
 
@@ -27,50 +70,79 @@ html, body, [class*="css"] {
    ========================================================= */
 
 h1 {
-    color: #4c1d95;
-    font-weight: 800;
-    letter-spacing: -1px;
+    color: var(--purple-900) !important;
+    font-weight: 800 !important;
 }
 
 h2 {
-    color: #581c87;
-    font-weight: 750;
+    color: var(--purple-800) !important;
+    font-weight: 750 !important;
 }
 
 h3 {
-    color: #6b21a8;
-    font-weight: 700;
+    color: var(--purple-700) !important;
+    font-weight: 700 !important;
 }
 
 
 /* =========================================================
-   SIDEBAR
+   NORMAL TEXT
    ========================================================= */
 
-[data-testid="stSidebar"] {
+p {
+    color: var(--text);
+}
+
+label {
+    color: var(--text) !important;
+}
+
+
+/* =========================================================
+   SIDEBAR - PURPLE
+   ========================================================= */
+
+section[data-testid="stSidebar"] {
     background: linear-gradient(
         180deg,
         #ffffff 0%,
-        #faf5ff 50%,
+        #faf5ff 45%,
         #f3e8ff 100%
-    );
+    ) !important;
 
-    border-right: 1px solid #e9d5ff;
+    border-right: 2px solid var(--purple-200) !important;
 }
 
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
-    color: #581c87 !important;
+
+/* Sidebar internal area */
+
+section[data-testid="stSidebar"] > div {
+    background: transparent !important;
 }
 
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] label {
-    color: #4c1d95 !important;
+
+/* Sidebar title */
+
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    color: var(--purple-900) !important;
 }
 
-[data-testid="stSidebar"] hr {
-    border-color: #e9d5ff;
+
+/* Sidebar text */
+
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] label {
+    color: var(--purple-800) !important;
+}
+
+
+/* Sidebar divider */
+
+section[data-testid="stSidebar"] hr {
+    border-color: var(--purple-200) !important;
 }
 
 
@@ -78,113 +150,71 @@ h3 {
    SIDEBAR NAVIGATION
    ========================================================= */
 
-[data-testid="stSidebar"] div[role="radiogroup"] label {
-    background-color: #ffffff;
-    color: #581c87 !important;
-
-    padding: 10px 13px;
-    border-radius: 9px;
-
-    margin-bottom: 6px;
-
-    border: 1px solid #ede9fe;
-
-    transition: all 0.2s ease;
+section[data-testid="stSidebar"]
+div[role="radiogroup"] {
+    gap: 6px;
 }
 
-[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-    background-color: #f3e8ff;
-    border-color: #c084fc;
+
+/* Navigation item */
+
+section[data-testid="stSidebar"]
+div[role="radiogroup"] label {
+    background-color: #ffffff !important;
+
+    border: 1px solid var(--purple-100) !important;
+
+    border-radius: 10px !important;
+
+    padding: 10px 12px !important;
+
+    margin-bottom: 5px !important;
+
+    transition: 0.2s ease !important;
+}
+
+
+/* Navigation hover */
+
+section[data-testid="stSidebar"]
+div[role="radiogroup"] label:hover {
+    background-color: var(--purple-100) !important;
+
+    border-color: var(--purple-300) !important;
+
     transform: translateX(3px);
 }
 
 
-/* =========================================================
-   SIDEBAR SELECTED ITEM
-   ========================================================= */
+/* Navigation text */
 
-[data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] {
-    background: linear-gradient(
-        90deg,
-        #7c3aed,
-        #9333ea
-    );
+section[data-testid="stSidebar"]
+div[role="radiogroup"] label p {
+    color: var(--purple-800) !important;
 
-    color: white !important;
-
-    border-color: #7c3aed;
-}
-
-[data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] p {
-    color: white !important;
+    font-weight: 600 !important;
 }
 
 
 /* =========================================================
-   METRIC CARDS
+   FILE UPLOADER
    ========================================================= */
 
-[data-testid="stMetric"] {
-    background-color: #ffffff;
+[data-testid="stFileUploader"] {
+    background-color: #ffffff !important;
 
-    border: 1px solid #e9d5ff;
+    border: 1px solid var(--purple-200) !important;
 
-    border-radius: 15px;
+    border-radius: 12px !important;
 
-    padding: 18px;
-
-    box-shadow:
-        0px 4px 14px rgba(124, 58, 237, 0.08);
-
-    transition: all 0.25s ease;
-}
-
-[data-testid="stMetric"]:hover {
-    transform: translateY(-3px);
-
-    border-color: #c084fc;
-
-    box-shadow:
-        0px 8px 22px rgba(124, 58, 237, 0.15);
-}
-
-[data-testid="stMetricLabel"] {
-    color: #6b21a8 !important;
-    font-weight: 600;
-}
-
-[data-testid="stMetricValue"] {
-    color: #7c3aed !important;
-    font-weight: 800;
+    padding: 8px !important;
 }
 
 
-/* =========================================================
-   BUTTONS
-   ========================================================= */
+/* File uploader text */
 
-.stButton > button {
-    border-radius: 9px;
-
-    border: 1px solid #c084fc;
-
-    font-weight: 600;
-
-    color: #6b21a8;
-
-    background-color: #ffffff;
-
-    transition: all 0.2s ease;
-}
-
-.stButton > button:hover {
-    background-color: #f3e8ff;
-
-    border-color: #9333ea;
-
-    color: #581c87;
-
-    transform: translateY(-1px);
+[data-testid="stFileUploader"] * {
+    color: var(--purple-800) !important;
 }
 
 
@@ -197,21 +227,64 @@ h3 {
         90deg,
         #7c3aed,
         #9333ea
-    );
+    ) !important;
 
-    color: white;
+    color: #ffffff !important;
 
-    border: none;
+    border: none !important;
+
+    border-radius: 10px !important;
+
+    font-weight: 700 !important;
+
+    box-shadow:
+        0px 5px 15px rgba(124, 58, 237, 0.20) !important;
+
+    transition: 0.2s ease !important;
 }
+
+
+/* Primary button hover */
 
 .stButton > button[kind="primary"]:hover {
     background: linear-gradient(
         90deg,
         #6d28d9,
         #7e22ce
-    );
+    ) !important;
 
-    color: white;
+    color: #ffffff !important;
+
+    transform: translateY(-2px) !important;
+
+    box-shadow:
+        0px 8px 20px rgba(124, 58, 237, 0.30) !important;
+}
+
+
+/* =========================================================
+   NORMAL BUTTON
+   ========================================================= */
+
+.stButton > button {
+    background-color: #ffffff !important;
+
+    color: var(--purple-800) !important;
+
+    border: 1px solid var(--purple-300) !important;
+
+    border-radius: 9px !important;
+
+    font-weight: 600 !important;
+}
+
+
+.stButton > button:hover {
+    background-color: var(--purple-50) !important;
+
+    color: var(--purple-900) !important;
+
+    border-color: var(--purple-500) !important;
 }
 
 
@@ -224,88 +297,87 @@ h3 {
         90deg,
         #7c3aed,
         #9333ea
-    );
+    ) !important;
 
-    color: white;
+    color: #ffffff !important;
 
-    border: none;
+    border: none !important;
 
-    border-radius: 9px;
+    border-radius: 10px !important;
 
-    font-weight: 600;
+    font-weight: 700 !important;
 
-    transition: all 0.2s ease;
+    transition: 0.2s ease !important;
 }
+
 
 .stDownloadButton > button:hover {
     background: linear-gradient(
         90deg,
         #6d28d9,
         #7e22ce
-    );
+    ) !important;
 
-    transform: translateY(-1px);
+    color: #ffffff !important;
+
+    transform: translateY(-2px) !important;
 }
 
 
 /* =========================================================
-   FILE UPLOADER
+   KPI / METRIC CARDS
    ========================================================= */
 
-[data-testid="stFileUploader"] {
-    background-color: #ffffff;
+[data-testid="stMetric"] {
+    background-color: #ffffff !important;
 
-    border: 1px solid #e9d5ff;
+    border: 1px solid var(--purple-200) !important;
 
-    border-radius: 12px;
+    border-radius: 16px !important;
 
-    padding: 8px;
-}
-
-[data-testid="stFileUploader"]:hover {
-    border-color: #c084fc;
-}
-
-
-/* =========================================================
-   DATAFRAME
-   ========================================================= */
-
-[data-testid="stDataFrame"] {
-    background-color: #ffffff;
-
-    border-radius: 12px;
-
-    overflow: hidden;
-
-    border: 1px solid #e9d5ff;
+    padding: 18px !important;
 
     box-shadow:
-        0px 3px 10px rgba(124, 58, 237, 0.05);
+        0px 5px 18px var(--shadow) !important;
+
+    transition: 0.25s ease !important;
 }
 
 
-/* =========================================================
-   ALERTS
-   ========================================================= */
+/* Metric hover */
 
-[data-testid="stAlert"] {
-    border-radius: 12px;
+[data-testid="stMetric"]:hover {
+    border-color: var(--purple-400) !important;
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0px 10px 25px rgba(124, 58, 237, 0.16) !important;
 }
 
 
-/* =========================================================
-   SELECT BOX
-   ========================================================= */
+/* Metric label */
 
-[data-baseweb="select"] > div {
-    border-radius: 9px;
+[data-testid="stMetricLabel"] {
+    color: var(--purple-700) !important;
 
-    border-color: #ddd6fe;
+    font-weight: 600 !important;
 }
 
-[data-baseweb="select"] > div:hover {
-    border-color: #a855f7;
+
+/* Metric value */
+
+[data-testid="stMetricValue"] {
+    color: var(--purple-600) !important;
+
+    font-weight: 800 !important;
+}
+
+
+/* Metric delta */
+
+[data-testid="stMetricDelta"] {
+    color: var(--purple-600) !important;
 }
 
 
@@ -315,98 +387,137 @@ h3 {
 
 .dashboard-header {
     background: linear-gradient(
-        120deg,
+        135deg,
         #ffffff 0%,
         #faf5ff 45%,
-        #f3e8ff 100%
-    );
+        #ede9fe 100%
+    ) !important;
 
-    padding: 28px 32px;
+    padding: 30px 34px !important;
 
-    border-radius: 18px;
+    border-radius: 20px !important;
 
-    margin-bottom: 25px;
+    margin-bottom: 25px !important;
 
-    border: 1px solid #e9d5ff;
+    border: 2px solid var(--purple-200) !important;
 
     box-shadow:
-        0px 8px 25px rgba(124, 58, 237, 0.10);
+        0px 8px 28px rgba(76, 29, 149, 0.12) !important;
 }
+
+
+/* Header title */
 
 .dashboard-header h1 {
-    color: #581c87 !important;
+    color: var(--purple-900) !important;
 
-    margin: 0;
+    margin: 0 !important;
 
-    font-size: 2.2rem;
+    font-size: 2.2rem !important;
+
+    font-weight: 800 !important;
 }
+
+
+/* Header subtitle */
 
 .dashboard-header p {
-    color: #7e22ce;
+    color: var(--purple-700) !important;
 
-    margin-top: 8px;
+    margin-top: 8px !important;
 
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
 
-    font-size: 1rem;
+    font-size: 1rem !important;
 }
 
 
 /* =========================================================
-   SECTION CARDS
+   SECTION TITLES
    ========================================================= */
 
-.section-card {
-    background-color: #ffffff;
+.stSubheader {
+    color: var(--purple-800) !important;
+}
 
-    padding: 20px;
 
-    border-radius: 14px;
+/* =========================================================
+   DATAFRAME
+   ========================================================= */
 
-    border: 1px solid #e9d5ff;
+[data-testid="stDataFrame"] {
+    background-color: #ffffff !important;
+
+    border: 1px solid var(--purple-200) !important;
+
+    border-radius: 14px !important;
+
+    overflow: hidden !important;
 
     box-shadow:
-        0px 3px 12px rgba(124, 58, 237, 0.06);
-
-    margin-bottom: 15px;
-}
-
-.section-card:hover {
-    border-color: #c084fc;
-
-    box-shadow:
-        0px 5px 16px rgba(124, 58, 237, 0.10);
+        0px 4px 15px rgba(76, 29, 149, 0.06) !important;
 }
 
 
 /* =========================================================
-   SMALL TEXT
+   SELECT BOX
    ========================================================= */
 
-.small-note {
-    color: #7e22ce;
+[data-baseweb="select"] > div {
+    background-color: #ffffff !important;
 
-    opacity: 0.75;
+    border: 1px solid var(--purple-200) !important;
 
-    font-size: 0.9rem;
+    border-radius: 9px !important;
+}
+
+
+[data-baseweb="select"] > div:hover {
+    border-color: var(--purple-500) !important;
 }
 
 
 /* =========================================================
-   DIVIDERS
+   MULTISELECT
    ========================================================= */
 
-hr {
-    border-color: #e9d5ff !important;
+[data-baseweb="tag"] {
+    background-color: var(--purple-100) !important;
+
+    color: var(--purple-800) !important;
+
+    border-radius: 6px !important;
 }
 
 
 /* =========================================================
-   PROGRESS BAR
+   INPUT
    ========================================================= */
 
-[data-testid="stProgressBar"] > div > div {
-    background-color: #7c3aed;
+[data-baseweb="input"] {
+    background-color: #ffffff !important;
+
+    border-radius: 9px !important;
+}
+
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
+[data-testid="stAlert"] {
+    border-radius: 12px !important;
+
+    border: 1px solid var(--purple-200) !important;
+}
+
+
+/* =========================================================
+   INFO ALERT
+   ========================================================= */
+
+[data-testid="stAlert"][kind="info"] {
+    background-color: #f5f3ff !important;
 }
 
 
@@ -415,16 +526,21 @@ hr {
    ========================================================= */
 
 button[data-baseweb="tab"] {
-    color: #6b21a8;
-    font-weight: 600;
+    color: var(--purple-700) !important;
+
+    font-weight: 600 !important;
 }
+
 
 button[data-baseweb="tab"]:hover {
-    color: #9333ea;
+    color: var(--purple-600) !important;
 }
 
+
 button[data-baseweb="tab"][aria-selected="true"] {
-    color: #7c3aed !important;
+    color: var(--purple-600) !important;
+
+    font-weight: 700 !important;
 }
 
 
@@ -433,22 +549,64 @@ button[data-baseweb="tab"][aria-selected="true"] {
    ========================================================= */
 
 [data-testid="stExpander"] {
-    background-color: #ffffff;
+    background-color: #ffffff !important;
 
-    border: 1px solid #e9d5ff;
+    border: 1px solid var(--purple-200) !important;
 
-    border-radius: 12px;
+    border-radius: 12px !important;
+}
+
+
+[data-testid="stExpander"]:hover {
+    border-color: var(--purple-400) !important;
 }
 
 
 /* =========================================================
-   CODE / SHA-256 BOX
+   PROGRESS BAR
+   ========================================================= */
+
+[data-testid="stProgressBar"] {
+    background-color: var(--purple-100) !important;
+
+    border-radius: 10px !important;
+}
+
+
+[data-testid="stProgressBar"] > div > div {
+    background: linear-gradient(
+        90deg,
+        #7c3aed,
+        #a855f7
+    ) !important;
+
+    border-radius: 10px !important;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+[data-testid="stStatus"] {
+    background-color: #ffffff !important;
+
+    border: 1px solid var(--purple-200) !important;
+
+    border-radius: 12px !important;
+}
+
+
+/* =========================================================
+   CODE / SHA-256
    ========================================================= */
 
 code {
-    color: #6b21a8 !important;
+    background-color: var(--purple-50) !important;
 
-    background-color: #f5f3ff !important;
+    color: var(--purple-800) !important;
+
+    border: 1px solid var(--purple-100);
 
     border-radius: 5px;
 
@@ -457,17 +615,158 @@ code {
 
 
 /* =========================================================
-   STREAMLIT DEFAULT UI
+   CHART
+   ========================================================= */
+
+[data-testid="stVegaLiteChart"] {
+    background-color: #ffffff !important;
+
+    border: 1px solid var(--purple-200) !important;
+
+    border-radius: 14px !important;
+
+    padding: 10px !important;
+
+    box-shadow:
+        0px 4px 15px rgba(76, 29, 149, 0.06) !important;
+}
+
+
+/* =========================================================
+   IMAGE
+   ========================================================= */
+
+[data-testid="stImage"] {
+    background-color: #ffffff !important;
+
+    border: 1px solid var(--purple-200) !important;
+
+    border-radius: 14px !important;
+
+    padding: 8px !important;
+}
+
+
+/* =========================================================
+   DIVIDERS
+   ========================================================= */
+
+hr {
+    border-color: var(--purple-200) !important;
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a {
+    color: var(--purple-600) !important;
+
+    font-weight: 600;
+}
+
+
+a:hover {
+    color: var(--purple-900) !important;
+}
+
+
+/* =========================================================
+   SMALL TEXT
+   ========================================================= */
+
+.small-note {
+    color: var(--purple-700) !important;
+
+    opacity: 0.75;
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--purple-50);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--purple-300);
+
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--purple-500);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+    visibility: hidden;
+}
+
+
+/* =========================================================
+   STREAMLIT HEADER
+   ========================================================= */
+
+header[data-testid="stHeader"] {
+    background-color: transparent !important;
+}
+
+
+/* =========================================================
+   MAIN MENU
    ========================================================= */
 
 #MainMenu {
     visibility: hidden;
 }
 
-footer {
-    visibility: hidden;
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+    background-color: var(--purple-300);
+
+    color: var(--purple-950);
 }
 
-header[data-testid="stHeader"] {
-    background-color: transparent;
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .dashboard-header {
+        padding: 22px !important;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.8rem !important;
+    }
+
+    [data-testid="stMetric"] {
+        padding: 14px !important;
+    }
 }
