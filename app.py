@@ -243,22 +243,15 @@ if not st.session_state.analysis_done:
         "then click **Run Complete Analysis**."
     )
 
-    st.markdown(
-        """
-        <div class="instruction-card">
-            <h2>How to use the dashboard</h2>
+   st.markdown("## How to use the dashboard")
 
-            <ol>
-                <li>Upload your <b>RACC CSV dataset</b>.</li>
-                <li>Click <b>Run Complete Analysis</b>.</li>
-                <li>Wait for all analysis modules to finish.</li>
-                <li>Use the <b>sidebar navigation</b> to explore the results.</li>
-                <li>Download the generated results from the <b>Downloads</b> page.</li>
-            </ol>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+st.markdown("""
+1. Upload your **RACC CSV dataset**.
+2. Click **Run Complete Analysis**.
+3. Wait for all analysis modules to finish.
+4. Use the **sidebar navigation** to explore the results.
+5. Download the generated results from the **Downloads** page.
+""")
 
     st.stop()
 
