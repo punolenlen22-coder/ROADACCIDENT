@@ -207,17 +207,57 @@ if run and uploaded is not None:
                 )
             )
 
-        st.session_state.analysis_done = True
+        # Only mark analysis as complete if the important
+        # results actually exist.
+        required_modules = [
+            "00_setup",
+            "01_cleaning",
+            "04_classification",
+            "05_prediction",
+            "06_forecasting",
+            "07_performance",
+            "09_exports"
+        ]
 
-        status.update(
-            label="Analysis complete",
-            state="complete",
-            expanded=False
-        )
+        missing_modules = [
+            module
+            for module in required_modules
+            if module not in core.STATE
+        ]
 
-        st.success(
-            "✅ Analysis successfully completed."
-        )
+        if missing_modules:
+
+            st.session_state.analysis_done = False
+
+            status.update(
+                label="Analysis incomplete",
+                state="error",
+                expanded=True
+            )
+
+            st.error(
+                "The analysis did not generate all required "
+                "results."
+            )
+
+            st.write(
+                "Missing modules:",
+                missing_modules
+            )
+
+        else:
+
+            st.session_state.analysis_done = True
+
+            status.update(
+                label="Analysis complete",
+                state="complete",
+                expanded=False
+            )
+
+            st.success(
+                "✅ Analysis successfully completed."
+            )
 
     except Exception as exc:
 
@@ -243,15 +283,19 @@ if not st.session_state.analysis_done:
         "then click **Run Complete Analysis**."
     )
 
-   st.markdown("## How to use the dashboard")
+    st.markdown(
+        "### How to use the dashboard"
+    )
 
-st.markdown("""
+    st.markdown(
+        """
 1. Upload your **RACC CSV dataset**.
 2. Click **Run Complete Analysis**.
 3. Wait for all analysis modules to finish.
 4. Use the **sidebar navigation** to explore the results.
 5. Download the generated results from the **Downloads** page.
-""")
+        """
+    )
 
     st.stop()
 
@@ -260,7 +304,13 @@ st.markdown("""
 # LOAD ANALYSIS RESULTS
 # ============================================================
 
-# Check if the analysis results are really available.
+state = core.STATE
+
+
+# ------------------------------------------------------------
+# SAFETY CHECK
+# ------------------------------------------------------------
+
 required_modules = [
     "00_setup",
     "01_cleaning",
@@ -271,10 +321,6 @@ required_modules = [
     "09_exports"
 ]
 
-state = core.STATE
-
-# This prevents KeyError when Streamlit session state
-# says analysis is done but the actual results are missing.
 missing_modules = [
     module
     for module in required_modules
@@ -285,9 +331,8 @@ if missing_modules:
 
     st.session_state.analysis_done = False
 
-    st.warning(
-        "⚠️ The previous analysis session has expired or "
-        "the analysis results are no longer available."
+    st.error(
+        "⚠️ The analysis results are no longer available."
     )
 
     st.info(
@@ -298,7 +343,10 @@ if missing_modules:
     st.stop()
 
 
-# Safely load the analysis results
+# ------------------------------------------------------------
+# LOAD RESULTS
+# ------------------------------------------------------------
+
 clean = state["01_cleaning"]["df"]
 
 perf = (
@@ -649,7 +697,8 @@ elif page == "🖼️ Charts":
         )
 
         st.markdown(
-            f"### {Path(chosen).stem.replace('_', ' ').title()}"
+            f"### "
+            f"{Path(chosen).stem.replace('_', ' ').title()}"
         )
 
         st.image(
