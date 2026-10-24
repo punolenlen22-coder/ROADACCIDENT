@@ -38,7 +38,9 @@ def load_css():
             "Please make sure style.css is in the same folder as app.py."
         )
 
+
 load_css()
+
 
 # ============================================================
 # SESSION STATE
