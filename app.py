@@ -1,966 +1,185 @@
-from pathlib import Path
-import tempfile
+"""Run: python -m streamlit run racc_streamlit_app.py
+Keep the three part_*.py files in the same folder. Install requirements.txt first.
+"""
+from io import BytesIO
+from datetime import date, time
+import hashlib
+import numpy as np
 import pandas as pd
 import streamlit as st
-import racc_core as core
-
-
-# ============================================================
-# 1. PAGE CONFIGURATION
-# ============================================================
-
-st.set_page_config(
-    page_title="RACC Analytics Dashboard",
-    page_icon="🚦",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-
-# ============================================================
-# 2. CUSTOM CSS
-# ============================================================
-
-st.markdown("""
-<style>
-
-/* =========================================================
-   GLOBAL PAGE
-   ========================================================= */
-
-.stApp {
-    background-color: #f5f7fb;
-}
-
-.block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 3rem;
-    max-width: 1450px;
-}
-
-/* Main text */
-html, body, [class*="css"] {
-    font-family: "Segoe UI", Arial, sans-serif;
-}
-
-/* =========================================================
-   HEADINGS
-   ========================================================= */
-
-h1 {
-    color: #0f172a;
-    font-weight: 800;
-    letter-spacing: -1px;
-}
-
-h2 {
-    color: #172554;
-    font-weight: 750;
-}
-
-h3 {
-    color: #1e3a8a;
-    font-weight: 700;
-}
-
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
-
-[data-testid="stSidebar"] {
-    background:
-        linear-gradient(
-            180deg,
-            #0f172a 0%,
-            #172554 55%,
-            #1e3a8a 100%
-        );
-    border-right: 1px solid rgba(255,255,255,0.08);
-}
-
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3,
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] label {
-    color: white !important;
-}
-
-[data-testid="stSidebar"] hr {
-    border-color: rgba(255,255,255,0.15);
-}
-
-/* Sidebar radio navigation */
-[data-testid="stSidebar"] div[role="radiogroup"] label {
-    background-color: rgba(255,255,255,0.06);
-    padding: 9px 12px;
-    border-radius: 8px;
-    margin-bottom: 5px;
-    transition: all 0.2s ease;
-}
-
-[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-    background-color: rgba(255,255,255,0.15);
-}
-
-/* =========================================================
-   METRIC CARDS
-   ========================================================= */
-
-[data-testid="stMetric"] {
-    background-color: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 15px;
-    padding: 18px;
-    box-shadow: 0px 4px 14px rgba(15,23,42,0.06);
-    transition: all 0.25s ease;
-}
-
-[data-testid="stMetric"]:hover {
-    transform: translateY(-3px);
-    box-shadow: 0px 8px 22px rgba(15,23,42,0.10);
-}
-
-[data-testid="stMetricLabel"] {
-    font-weight: 600;
-}
-
-[data-testid="stMetricValue"] {
-    color: #1d4ed8;
-    font-weight: 800;
-}
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-.stButton > button {
-    border-radius: 9px;
-    border: none;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.stButton > button[kind="primary"] {
-    background: linear-gradient(
-        90deg,
-        #2563eb,
-        #1d4ed8
-    );
-    color: white;
-}
-
-.stButton > button:hover {
-    transform: translateY(-1px);
-}
-
-/* =========================================================
-   DOWNLOAD BUTTON
-   ========================================================= */
-
-.stDownloadButton > button {
-    background: linear-gradient(
-        90deg,
-        #15803d,
-        #16a34a
-    );
-    color: white;
-    border: none;
-    border-radius: 9px;
-    font-weight: 600;
-}
-
-.stDownloadButton > button:hover {
-    color: white;
-    border: none;
-}
-
-/* =========================================================
-   FILE UPLOADER
-   ========================================================= */
-
-[data-testid="stFileUploader"] {
-    background-color: rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 5px;
-}
-
-/* =========================================================
-   DATAFRAME
-   ========================================================= */
-
-[data-testid="stDataFrame"] {
-    background-color: white;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #e2e8f0;
-}
-
-/* =========================================================
-   INFO / SUCCESS BOXES
-   ========================================================= */
-
-[data-testid="stAlert"] {
-    border-radius: 12px;
-}
-
-/* =========================================================
-   SELECT BOX / MULTISELECT
-   ========================================================= */
-
-[data-baseweb="select"] > div {
-    border-radius: 9px;
-}
-
-/* =========================================================
-   CUSTOM CLASSES
-   ========================================================= */
-
-.dashboard-header {
-    background:
-        linear-gradient(
-            120deg,
-            #0f172a,
-            #172554,
-            #1d4ed8
-        );
-    padding: 28px 32px;
-    border-radius: 18px;
-    margin-bottom: 25px;
-    box-shadow: 0px 8px 25px rgba(15,23,42,0.15);
-}
-
-.dashboard-header h1 {
-    color: white !important;
-    margin: 0;
-    font-size: 2.2rem;
-}
-
-.dashboard-header p {
-    color: #dbeafe;
-    margin-top: 8px;
-    margin-bottom: 0;
-    font-size: 1rem;
-}
-
-.section-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 14px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0px 3px 12px rgba(15,23,42,0.05);
-    margin-bottom: 15px;
-}
-
-.small-note {
-    opacity: 0.75;
-    font-size: 0.9rem;
-}
-
-/* =========================================================
-   HIDE STREAMLIT DEFAULT UI
-   ========================================================= */
-
-#MainMenu {
-    visibility: hidden;
-}
-
-footer {
-    visibility: hidden;
-}
-
-/* Keep header transparent */
-header[data-testid="stHeader"] {
-    background-color: transparent;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-# ============================================================
-# 3. SESSION STATE
-# ============================================================
-
-if "run_dir" not in st.session_state:
-    st.session_state.run_dir = tempfile.mkdtemp(
-        prefix="racc_streamlit_"
-    )
-
-if "analysis_done" not in st.session_state:
-    st.session_state.analysis_done = False
-
-
-# ============================================================
-# 4. SIDEBAR
-# ============================================================
-
-with st.sidebar:
-
-    st.markdown("## 🚦 RACC")
-    st.caption("Road Accident Analytics")
-
-    st.divider()
-
-    # --------------------------------------------------------
-    # NAVIGATION
-    # --------------------------------------------------------
-
-    st.markdown("### Navigation")
-
-    page = st.radio(
-        "Go to",
-        [
-            "🏠 Dashboard",
-            "📋 Cleaned Data",
-            "📊 Model Performance",
-            "📈 Forecasts",
-            "🖼️ Charts",
-            "⬇️ Downloads"
-        ],
-        label_visibility="collapsed"
-    )
-
-    st.divider()
-
-    # --------------------------------------------------------
-    # DATASET
-    # --------------------------------------------------------
-
-    st.markdown("### Dataset")
-
-    uploaded = st.file_uploader(
-        "Upload RACC CSV",
-        type=["csv"]
-    )
-
-    st.caption(
-        "Required columns:\n\n"
-        "DATE, TIME, LOCATION, WEATHER, "
-        "ROAD CONDITION, VEHICLE TYPE, "
-        "CAUSE, SEVERITY, GENDER"
-    )
-
-    run = st.button(
-        "▶ Run Complete Analysis",
-        type="primary",
-        use_container_width=True,
-        disabled=uploaded is None
-    )
-
-    st.divider()
-
-    # --------------------------------------------------------
-    # MODEL INFORMATION
-    # --------------------------------------------------------
-
-    st.markdown("### Model Defaults")
-
-    st.caption(
-        "Severity holdout: **2024**\n\n"
-        "Count holdout: **2025**\n\n"
-        "Forecast horizon: **12 months**"
-    )
-
-
-# ============================================================
-# 5. DASHBOARD HEADER
-# ============================================================
-
-st.markdown("""
-<div class="dashboard-header">
-    <h1>🚦 RACC Analytics Dashboard</h1>
-    <p>
-        Road Accident Classification, Prediction,
-        Forecasting and Analytics System
-    </p>
-</div>
-""", unsafe_allow_html=True)
-
-
-# ============================================================
-# 6. RUN COMPLETE ANALYSIS
-# ============================================================
-
-if run and uploaded is not None:
-
-    # Each Streamlit session gets its own output directory
-    core.OUTPUT_ROOT = (
-        Path(st.session_state.run_dir)
-        / "racc_outputs_modular"
-    )
-
-    core.OUTPUT_ROOT.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    # Reset notebook/module state
-    core.STATE.clear()
-
-    # Validate uploaded dataset
-    core.UPLOADED_DATASET = (
-        core.validate_dataset_selection(
-            uploaded.name,
-            uploaded.getvalue()
-        )
-    )
-
-    core.DATASET_UPLOADER = None
-
-    # Progress indicator
-    progress = st.progress(
-        0,
-        text="Preparing analysis..."
-    )
-
-    status = st.status(
-        "Running RACC modules",
-        expanded=True
-    )
-
-    try:
-
-        module_ids = list(core.MODULE_SPECS)
-
-        for idx, module_id in enumerate(
-            module_ids,
-            start=1
-        ):
-
-            title = (
-                core.MODULE_SPECS[module_id]["title"]
-            )
-
-            status.write(
-                f"Running **{module_id} — {title}**"
-            )
-
-            core.run_task(module_id)
-
-            progress.progress(
-                idx / len(module_ids),
-                text=(
-                    f"Completed {idx}/"
-                    f"{len(module_ids)} modules"
-                )
-            )
-
-        st.session_state.analysis_done = True
-
-        status.update(
-            label="Analysis complete",
-            state="complete",
-            expanded=False
-        )
-
-        st.success(
-            "✅ Analysis successfully completed."
-        )
-
-    except Exception as exc:
-
-        st.session_state.analysis_done = False
-
-        status.update(
-            label="Analysis stopped",
-            state="error",
-            expanded=True
-        )
-
-        st.exception(exc)
-
-
-# ============================================================
-# 7. WAIT FOR DATASET
-# ============================================================
-
-if not st.session_state.analysis_done:
-
-    st.info(
-        "👈 Upload your RACC CSV using the sidebar, "
-        "then click **Run Complete Analysis**."
-    )
-
-    st.markdown("### How to use the dashboard")
-
-    st.markdown("""
-    1. Upload your **RACC CSV dataset**.
-    2. Click **Run Complete Analysis**.
-    3. Wait for all analysis modules to finish.
-    4. Use the **sidebar navigation** to explore the results.
-    5. Download the generated results from the **Downloads** page.
-    """)
-
+try:
+    from part_2_data import REQUIRED, prepare_data, make_counts, statistical_analysis, features
+    from part_3_models import classification_analysis, prediction_analysis
+    from part_4_results import forecasting_analysis, download_package
+except ModuleNotFoundError as exc:
+    st.error('Missing file or Python package: ' + str(exc.name))
+    st.info('Extract the complete ZIP into one folder, then install requirements.txt. Run the main file only.')
     st.stop()
 
-
-# ============================================================
-# 8. LOAD ANALYSIS RESULTS
-# ============================================================
-
-state = core.STATE
-
-clean = state["01_cleaning"]["df"]
-
-perf = (
-    state["07_performance"]
-    ["performance_dashboard"]
-)
-
-source = state["00_setup"]
-
-
-# ============================================================
-# 9. GLOBAL KPI CARDS
-# ============================================================
-
-c1, c2, c3, c4 = st.columns(4)
-
-c1.metric(
-    "📄 Source Rows",
-    f"{len(source['raw']):,}"
-)
-
-c2.metric(
-    "🧹 Cleaned Rows",
-    f"{len(clean):,}"
-)
-
-c3.metric(
-    "📅 Years Covered",
-    (
-        f"{int(clean['year'].min())}"
-        f"–"
-        f"{int(clean['year'].max())}"
-    )
-)
-
-c4.metric(
-    "🤖 Selected Classifier",
-    state["04_classification"]
-    ["best_classifier_name"]
-)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-
-# ============================================================
-# 10. DASHBOARD / OVERVIEW PAGE
-# ============================================================
-
-if page == "🏠 Dashboard":
-
-    st.subheader("🏠 Dashboard Overview")
-
-    st.caption(
-        "General summary of the uploaded accident "
-        "dataset and completed analysis."
-    )
-
-    st.divider()
-
-    left, right = st.columns([1.15, 1])
-
-    with left:
-
-        st.markdown("### ⚙️ Module Status")
-
-        st.dataframe(
-            core.module_status(),
-            use_container_width=True,
-            hide_index=True
-        )
-
-    with right:
-
-        st.markdown("### 📁 Uploaded Dataset")
-
-        st.write(
-            f"**File:** {source['source_name']}"
-        )
-
-        st.write(
-            "**SHA-256:** "
-            f"`{source['SOURCE_SHA256'][:20]}…`"
-        )
-
-        st.info(
-            "The application preserves the original "
-            "RACC cleaning, classification, numeric "
-            "prediction, forecasting, evaluation, "
-            "feature-analysis and export logic."
-        )
-
-    st.divider()
-
-    st.markdown("### 📊 Performance Summary")
-
-    st.dataframe(
-        perf,
-        use_container_width=True,
-        hide_index=True
-    )
-
-
-# ============================================================
-# 11. CLEANED DATA PAGE
-# ============================================================
-
-elif page == "📋 Cleaned Data":
-
-    st.subheader("📋 Cleaned Accident Records")
-
-    st.caption(
-        "View and filter the cleaned accident dataset."
-    )
-
-    st.divider()
-
-    locations = sorted(
-        [
-            x
-            for x in clean.get(
-                "location_clean",
-                pd.Series(dtype=str)
-            )
-            .dropna()
-            .astype(str)
-            .unique()
-        ]
-    )
-
-    selected_locations = st.multiselect(
-        "📍 Filter by Location",
-        locations,
-        placeholder="Select one or more locations"
-    )
-
-    shown = clean
-
-    if selected_locations:
-
-        shown = shown[
-            shown["location_clean"]
-            .astype(str)
-            .isin(selected_locations)
-        ]
-
-    # Data information
-    d1, d2 = st.columns(2)
-
-    d1.metric(
-        "Displayed Records",
-        f"{len(shown):,}"
-    )
-
-    d2.metric(
-        "Total Cleaned Records",
-        f"{len(clean):,}"
-    )
-
-    st.dataframe(
-        shown,
-        use_container_width=True,
-        hide_index=True,
-        height=520
-    )
-
-    st.caption(
-        f"Showing {len(shown):,} "
-        f"of {len(clean):,} cleaned rows."
-    )
-
-
-# ============================================================
-# 12. MODEL PERFORMANCE PAGE
-# ============================================================
-
-elif page == "📊 Model Performance":
-
-    st.subheader("📊 Held-Out Model Performance")
-
-    st.caption(
-        "Evaluation results of the RACC predictive models."
-    )
-
-    st.divider()
-
-    st.markdown("### Overall Performance")
-
-    st.dataframe(
-        perf,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.divider()
-
-    st.markdown(
-        "### 🚨 Binary Severity Classification"
-    )
-
-    st.dataframe(
-        state["07_performance"]
-        ["classification_holdout"],
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.divider()
-
-    st.markdown(
-        "### 🔢 Daily Count Prediction"
-    )
-
-    st.dataframe(
-        state["07_performance"]
-        ["daily_holdout"],
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.divider()
-
-    st.markdown(
-        "### 📅 Monthly Forecasting"
-    )
-
-    st.dataframe(
-        state["07_performance"]
-        ["forecast_holdout"],
-        use_container_width=True,
-        hide_index=True
-    )
-
-
-# ============================================================
-# 13. FORECAST PAGE
-# ============================================================
-
-elif page == "📈 Forecasts":
-
-    st.subheader("📈 Forecasts & Predictions")
-
-    st.caption(
-        "Future accident-record predictions generated "
-        "from the RACC analysis."
-    )
-
-    st.divider()
-
-    st.markdown(
-        "### 🔮 Next-Day Record Count Prediction"
-    )
-
-    st.dataframe(
-        state["05_prediction"]
-        ["next_day_prediction"],
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.divider()
-
-    st.markdown(
-        "### 📅 12-Month Forecast"
-    )
-
-    future = (
-        state["06_forecasting"]
-        ["future_forecast"]
-    )
-
-    st.dataframe(
-        future,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    # --------------------------------------------------------
-    # FORECAST CHART
-    # --------------------------------------------------------
-
-    numeric_cols = (
-        future
-        .select_dtypes(include="number")
-        .columns
-        .tolist()
-    )
-
-    if numeric_cols:
-
-        chart_df = future.copy()
-
-        date_col = next(
-            (
-                c
-                for c in chart_df.columns
-                if "month" in c.lower()
-                or "date" in c.lower()
-            ),
-            None
-        )
-
-        if date_col:
-            chart_df = chart_df.set_index(
-                date_col
-            )
-
-        st.markdown(
-            "### 📉 Forecast Visualization"
-        )
-
-        st.line_chart(
-            chart_df[numeric_cols],
-            use_container_width=True
-        )
-
-
-# ============================================================
-# 14. CHARTS PAGE
-# ============================================================
-
-elif page == "🖼️ Charts":
-
-    st.subheader("🖼️ Generated Analysis Charts")
-
-    st.caption(
-        "View the charts generated by the RACC "
-        "analysis modules."
-    )
-
-    st.divider()
-
-    root = Path(core.OUTPUT_ROOT)
-
-    pngs = sorted(
-        root.rglob("*.png")
-    )
-
-    if not pngs:
-
-        st.info(
-            "No PNG charts were generated."
-        )
+def show_table(title, frame, key):
+    st.subheader(title)
+    if frame.empty:
+        st.info('No rows meet the requirements for this table.'); return
+    st.dataframe(frame, width='stretch')
+    st.download_button('Download CSV', frame.to_csv(index=False).encode('utf-8'),
+                       file_name=key + '.csv', mime='text/csv', key='download_' + key)
+
+def run_analysis(bundle, key, function, *args):
+    try:
+        with st.spinner('Running ' + key + '…'):
+            bundle['results'][key] = function(*args)
+        st.success('Analysis completed.')
+    except Exception as exc:
+        st.error(key.capitalize() + ': ' + str(exc))
+        with st.expander('Error details'): st.exception(exc)
+
+def show_classification(result):
+    st.write('Selected using development data:', result['selected_name'])
+    show_table('Classification performance', result['metrics'], 'classification_metrics')
+    if result['metrics'].iloc[0].ROC_AUC < .55:
+        st.warning('Held-out discrimination is close to chance. Feature rankings are exploratory, not validated risk factors.')
+    for title, key in [('Development comparison', 'cv'), ('Train/test dates', 'split'),
+                       ('Class-level results', 'report'), ('Four-class reference results', 'multiclass_report')]:
+        with st.expander(title): show_table(title, result[key], 'classification_' + key)
+    st.write('Binary confusion matrix: 0 = minor/no injury; 1 = major/fatal.')
+    st.dataframe(result['confusion'], width='stretch')
+    st.subheader('Which variables matter to the selected model?')
+    st.bar_chart(result['importance'].set_index('variable')['macro_F1_drop'])
+    show_table('Variable importance', result['importance'], 'classification_importance')
+    show_table('Variable-set comparisons', result['variable_combinations'], 'classification_variable_sets')
+    show_table('Supported weather/road/vehicle combinations', result['observed_combinations'], 'observed_combinations')
+    st.caption('Combinations use predictions from earlier-year training folds. Importance is post-evaluation and does not establish causation.')
+    with st.expander('Simple reference-tree rules'): st.code(result['rules'], language='text')
+
+def prediction_form(bundle):
+    result = bundle['results'].get('classification')
+    if result is None: return
+    st.subheader('Try one severity prediction')
+    with st.form('severity_form'):
+        a, b = st.columns(2)
+        when = a.date_input('Date', date(2024, 8, 15)); clock = b.time_input('Time', time(20, 0))
+        location = a.text_input('Location', 'P1 San Teodoro')
+        vehicle = b.text_input('Vehicle type', 'Motorcycle')
+        weather = a.selectbox('Weather', sorted(bundle['data']['clean'].weather.dropna().unique()))
+        road = b.selectbox('Road condition', sorted(bundle['data']['clean'].road_condition.dropna().unique()))
+        gender = a.selectbox('Gender as recorded', ['Male', 'Female', 'Male & Female'])
+        submitted = st.form_submit_button('Predict severity')
+    if submitted:
+        record = dict(zip(REQUIRED, [when.strftime('%d/%m/%Y'), clock.strftime('%I:%M %p'), location,
+                                    weather, road, vehicle, '', '', gender]))
+        incoming = prepare_data(pd.DataFrame([record]).to_csv(index=False).encode())['clean']
+        probability = result['model'].predict_proba(features(incoming))[0, 1]
+        st.metric('Model probability: major injury or fatal', f'{probability:.1%}')
+        st.caption('Illustrative prediction among reported records. Review the performance table before use.')
+
+def main():
+    st.set_page_config(page_title='RACC analysis', layout='wide')
+    st.title('RACC data analysis')
+    st.caption('Upload your CSV and run the analysis you need. All results stay in this browser session.')
+    upload = st.sidebar.file_uploader('Upload CSV dataset', type=['csv'], key='dataset_upload')
+    with st.sidebar.expander('CSV and cleaning settings'):
+        fix = st.checkbox('Apply documented provisional date corrections', True, key='date_fixes')
+        encoding = st.selectbox('Encoding', ['utf-8-sig', 'utf-8', 'cp1252', 'latin-1'], key='encoding')
+        separator_name = st.selectbox('Separator', ['Comma', 'Semicolon', 'Tab'], key='separator')
+        separator = {'Comma': ',', 'Semicolon': ';', 'Tab': '\t'}[separator_name]
+    coverage = st.sidebar.checkbox('Assume complete recording calendar', True, key='calendar_coverage')
+    page = st.sidebar.radio('Analysis', ['1. Upload and cleaning', '2. Statistics and EDA',
+        '3. Classification and prediction', '4. Forecasting and downloads'], key='analysis_page')
+    if upload is None:
+        st.session_state.pop('racc_bundle', None)
+        st.info('Upload RACC.csv using the left panel.')
+        st.code(','.join(REQUIRED), language='text'); return
+    signature = hashlib.sha256(upload.getvalue() + str((fix, encoding, separator, coverage)).encode()).hexdigest()
+    bundle = st.session_state.get('racc_bundle')
+    if bundle is None or bundle['signature'] != signature:
+        st.session_state.pop('racc_bundle', None)
+        try:
+            prepared = prepare_data(upload.getvalue(), fix, encoding, separator)
+        except Exception as exc:
+            st.error('Could not read this dataset: ' + str(exc)); return
+        bundle = {'signature': signature, 'data': prepared, 'results': {}, 'filename': upload.name}
+        st.session_state['racc_bundle'] = bundle
+    d = bundle['data']['clean']; results = bundle['results']
+    a, b, c = st.columns(3)
+    a.metric('Records', len(d)); b.metric('Usable injury grades', int(d.injury_grade.notna().sum()))
+    c.metric('Analyses completed', len(results))
+    st.caption('Repeated rows are retained. Counts describe reported records, not verified unique accidents or accident rates.')
+
+    if page.startswith('1.'):
+        st.header('Upload and data cleaning')
+        show_table('Data quality', bundle['data']['audit'], 'data_quality')
+        st.write('Exact repeats after the first occurrence:', bundle['data']['exact_repeats'])
+        st.write('Unusable dates:', int(d.date.isna().sum()), '| Missing/unusable times:', int(d.hour.isna().sum()))
+        show_table('Dates requiring review', bundle['data']['date_review'], 'date_review')
+        show_table('Cleaned data', d, 'cleaned_data')
+        st.info('Proposed year/date repairs require source-owner confirmation. Conscious and Unconscious are not injury grades. Missing target labels are not imputed.')
+
+    elif page.startswith('2.'):
+        st.header('Statistical analysis and EDA')
+        if st.button('Run statistical analysis', key='run_statistics'):
+            run_analysis(bundle, 'statistics', statistical_analysis, d)
+        if 'statistics' in results:
+            for title, key in [('Category frequencies', 'frequencies'), ('Exploratory association tests', 'associations'),
+                               ('Severity-label coverage by year', 'severity_coverage'), ('Numeric description', 'numeric_summary')]:
+                show_table(title, results['statistics'][key], 'statistics_' + key)
+            st.caption('Association tests collapse provisional incidents, permute labels within year and adjust p-values using Benjamini–Hochberg. Independence and reporting completeness remain assumptions.')
+        category = st.selectbox('Explore a variable', ['weather', 'road_condition', 'vehicle', 'area', 'severity', 'gender_group', 'cause'], key='eda_variable')
+        st.bar_chart(d[category].fillna('missing').value_counts().head(20))
+        st.subheader('Missing values')
+        st.bar_chart(d[['date', 'hour', 'location', 'injury_grade']].isna().mean().mul(100))
+        dated = d.loc[d.date.notna()]
+        if not dated.empty:
+            st.subheader('Monthly reported rows')
+            st.line_chart(dated.groupby(pd.Grouper(key='date', freq='MS')).size())
+            st.subheader('Severity vocabulary by year')
+            st.bar_chart(pd.crosstab(d.year, d.severity.fillna('missing')))
+
+    elif page.startswith('3.'):
+        st.header('Classification and numeric prediction')
+        st.write('Severity classification uses injury-grade recording years with at least 50% valid grades. The latest eligible dates are held out; preprocessing is fitted within training folds.')
+        if st.button('Run classification', key='run_classification'):
+            run_analysis(bundle, 'classification', classification_analysis, d)
+        if 'classification' in results:
+            show_classification(results['classification']); prediction_form(bundle)
+        st.divider(); st.subheader('Predict daily reported-row counts')
+        st.caption('One-day-ahead predictions use observed earlier days. A calendar day absent from the file is assumed to have zero recorded rows. MAE selection can favor a zero-median baseline; compare all error metrics.')
+        if not coverage: st.info('Enable the complete recording-calendar assumption to model counts.')
+        if st.button('Run numeric prediction', disabled=not coverage, key='run_prediction'):
+            try: counts = make_counts(d)
+            except Exception as exc: st.error(str(exc))
+            else: run_analysis(bundle, 'prediction', prediction_analysis, counts)
+        if 'prediction' in results:
+            r = results['prediction']
+            show_table('Numeric prediction performance', r['metrics'], 'prediction_metrics')
+            st.line_chart(r['predictions'].set_index('date')[['actual', 'predicted']])
+            show_table('Next day after the dataset end', r['next_day'], 'next_day')
+            show_table('Daily prediction variables', r['importance'], 'prediction_importance')
+            show_table('Daily variable-set comparisons', r['variable_combinations'], 'prediction_variable_sets')
+            with st.expander('Development comparison and split'):
+                show_table('Development MAE', r['cv'], 'prediction_cv'); st.dataframe(r['split'])
+            st.caption('Importance describes the best learned reference if a constant baseline wins; it does not show that the learned model improves on that baseline.')
 
     else:
+        st.header('Forecasting, model performance and downloads')
+        horizon = st.slider('Months beyond the dataset end', 1, 24, 12, key='forecast_horizon')
+        if st.button('Run monthly forecasting', disabled=not coverage, key='run_forecast'):
+            try: counts = make_counts(d)
+            except Exception as exc: st.error(str(exc))
+            else: run_analysis(bundle, 'forecast', forecasting_analysis, counts, horizon)
+        if 'forecast' in results:
+            r = results['forecast']
+            show_table('Monthly forecast performance', r['metrics'], 'forecast_metrics')
+            st.line_chart(r['holdout'].set_index('date')[['actual', 'predicted']])
+            show_table('Forecast after the dataset end', r['future'], 'future_forecast')
+            st.line_chart(r['future'].set_index('date')[['predicted', 'approx_90pct_low', 'approx_90pct_high']])
+            st.caption(f"Approximate 90% intervals use {r['calibration_errors']} development errors. Holdout coverage: {r['interval_coverage']:.1%}. Temporal dependence and small samples limit coverage guarantees.")
+            st.info('Forecast dates follow the last dataset month and may already be in the past. Update the data before current operational use.')
+            with st.expander('Forecast development comparison'): show_table('Development MAE', r['cv'], 'forecast_cv')
+        performance = [r['metrics'].assign(task=task) for task, r in results.items() if 'metrics' in r]
+        if performance: show_table('All completed model evaluations', pd.concat(performance, ignore_index=True), 'all_model_metrics')
+        st.download_button('Download all completed results (ZIP)', download_package(bundle['data'], results, upload.name),
+            file_name='RACC_results.zip', mime='application/zip', key='download_results')
+        st.caption('The ZIP includes cleaned data and the analyses you have actually run. Run statistics, classification, numeric prediction and forecasting to include every task.')
 
-        labels = [
-            str(p.relative_to(root))
-            for p in pngs
-        ]
-
-        chosen = st.selectbox(
-            "📊 Choose a Chart",
-            labels
-        )
-
-        st.markdown(
-            f"### {Path(chosen).stem.replace('_', ' ').title()}"
-        )
-
-        st.image(
-            str(root / chosen),
-            use_container_width=True
-        )
-
-
-# ============================================================
-# 15. DOWNLOAD PAGE
-# ============================================================
-
-elif page == "⬇️ Downloads":
-
-    st.subheader("⬇️ Download Analysis Results")
-
-    st.caption(
-        "Export the generated RACC analysis results."
-    )
-
-    st.divider()
-
-    # --------------------------------------------------------
-    # COMPLETE ZIP
-    # --------------------------------------------------------
-
-    st.markdown(
-        "### 📦 Complete Analysis"
-    )
-
-    archive = (
-        state["09_exports"]
-        .get("archive")
-    )
-
-    if archive and Path(archive).exists():
-
-        data = Path(archive).read_bytes()
-
-        st.download_button(
-            "⬇️ Download Complete Analysis ZIP",
-            data=data,
-            file_name=Path(archive).name,
-            mime="application/zip",
-            use_container_width=True
-        )
-
-    else:
-
-        st.warning(
-            "Complete analysis ZIP is not available."
-        )
-
-    st.divider()
-
-    # --------------------------------------------------------
-    # CLEANED CSV
-    # --------------------------------------------------------
-
-    st.markdown(
-        "### 📄 Cleaned Dataset"
-    )
-
-    cleaned_csv = (
-        clean
-        .to_csv(index=False)
-        .encode("utf-8")
-    )
-
-    st.download_button(
-        "⬇️ Download Cleaned Records CSV",
-        data=cleaned_csv,
-        file_name="racc_cleaned_records.csv",
-        mime="text/csv",
-        use_container_width=True
-    )
-
-    st.info(
-        "The complete ZIP contains the generated tables, "
-        "charts, model files, settings and consolidated "
-        "analysis results organized by module."
-    )
-
-
-# ============================================================
-# 16. FOOTER
-# ============================================================
-
-st.divider()
-
-st.markdown(
-    """
-    <div style="
-        text-align:center;
-        color:#64748b;
-        font-size:13px;
-        padding:10px;
-    ">
-        🚦 RACC Analytics Dashboard
-        <br>
-        Road Accident Classification,
-        Prediction & Forecasting System
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+if __name__ == '__main__':
+    main()
