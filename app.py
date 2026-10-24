@@ -137,11 +137,6 @@ st.markdown(
         <div class="dashboard-title">
             🚦 RACC Analytics Dashboard
         </div>
-
-        <div class="dashboard-subtitle">
-            Road Accident Classification, Prediction,
-            Forecasting and Analytics System
-        </div>
     </div>
     """,
     unsafe_allow_html=True
