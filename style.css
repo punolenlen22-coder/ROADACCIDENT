@@ -24,16 +24,18 @@
     --white: #ffffff;
 
     --background: #faf9ff;
+
     --text: #2e1065;
     --text-muted: #6b21a8;
 
     --border: #ddd6fe;
+
     --shadow: rgba(76, 29, 149, 0.10);
 }
 
 
 /* =========================================================
-   GLOBAL
+   MAIN APPLICATION
    ========================================================= */
 
 .stApp {
@@ -58,6 +60,11 @@
     max-width: 1450px !important;
 }
 
+
+/* =========================================================
+   FONT
+   ========================================================= */
+
 html,
 body,
 [class*="css"] {
@@ -66,7 +73,7 @@ body,
 
 
 /* =========================================================
-   HEADINGS
+   GENERAL TEXT
    ========================================================= */
 
 h1 {
@@ -84,11 +91,6 @@ h3 {
     font-weight: 700 !important;
 }
 
-
-/* =========================================================
-   NORMAL TEXT
-   ========================================================= */
-
 p {
     color: var(--text);
 }
@@ -99,7 +101,7 @@ label {
 
 
 /* =========================================================
-   SIDEBAR - PURPLE
+   SIDEBAR
    ========================================================= */
 
 section[data-testid="stSidebar"] {
@@ -113,15 +115,12 @@ section[data-testid="stSidebar"] {
     border-right: 2px solid var(--purple-200) !important;
 }
 
-
-/* Sidebar internal area */
-
 section[data-testid="stSidebar"] > div {
     background: transparent !important;
 }
 
 
-/* Sidebar title */
+/* Sidebar headings */
 
 section[data-testid="stSidebar"] h1,
 section[data-testid="stSidebar"] h2,
@@ -210,9 +209,6 @@ div[role="radiogroup"] label p {
     padding: 8px !important;
 }
 
-
-/* File uploader text */
-
 [data-testid="stFileUploader"] * {
     color: var(--purple-800) !important;
 }
@@ -238,13 +234,11 @@ div[role="radiogroup"] label p {
     font-weight: 700 !important;
 
     box-shadow:
-        0px 5px 15px rgba(124, 58, 237, 0.20) !important;
+        0 5px 15px rgba(124, 58, 237, 0.20) !important;
 
     transition: 0.2s ease !important;
 }
 
-
-/* Primary button hover */
 
 .stButton > button[kind="primary"]:hover {
     background: linear-gradient(
@@ -258,7 +252,7 @@ div[role="radiogroup"] label p {
     transform: translateY(-2px) !important;
 
     box-shadow:
-        0px 8px 20px rgba(124, 58, 237, 0.30) !important;
+        0 8px 20px rgba(124, 58, 237, 0.30) !important;
 }
 
 
@@ -277,7 +271,6 @@ div[role="radiogroup"] label p {
 
     font-weight: 600 !important;
 }
-
 
 .stButton > button:hover {
     background-color: var(--purple-50) !important;
@@ -310,7 +303,6 @@ div[role="radiogroup"] label p {
     transition: 0.2s ease !important;
 }
 
-
 .stDownloadButton > button:hover {
     background: linear-gradient(
         90deg,
@@ -325,7 +317,7 @@ div[role="radiogroup"] label p {
 
 
 /* =========================================================
-   KPI / METRIC CARDS
+   KPI CARDS
    ========================================================= */
 
 [data-testid="stMetric"] {
@@ -338,13 +330,10 @@ div[role="radiogroup"] label p {
     padding: 18px !important;
 
     box-shadow:
-        0px 5px 18px var(--shadow) !important;
+        0 5px 18px var(--shadow) !important;
 
     transition: 0.25s ease !important;
 }
-
-
-/* Metric hover */
 
 [data-testid="stMetric"]:hover {
     border-color: var(--purple-400) !important;
@@ -352,11 +341,8 @@ div[role="radiogroup"] label p {
     transform: translateY(-3px);
 
     box-shadow:
-        0px 10px 25px rgba(124, 58, 237, 0.16) !important;
+        0 10px 25px rgba(124, 58, 237, 0.16) !important;
 }
-
-
-/* Metric label */
 
 [data-testid="stMetricLabel"] {
     color: var(--purple-700) !important;
@@ -364,17 +350,11 @@ div[role="radiogroup"] label p {
     font-weight: 600 !important;
 }
 
-
-/* Metric value */
-
 [data-testid="stMetricValue"] {
     color: var(--purple-600) !important;
 
     font-weight: 800 !important;
 }
-
-
-/* Metric delta */
 
 [data-testid="stMetricDelta"] {
     color: var(--purple-600) !important;
@@ -402,38 +382,97 @@ div[role="radiogroup"] label p {
     border: 2px solid var(--purple-200) !important;
 
     box-shadow:
-        0px 8px 28px rgba(76, 29, 149, 0.12) !important;
+        0 8px 28px rgba(76, 29, 149, 0.12) !important;
 }
 
 
-/* Header title */
+/* Main dashboard title */
 
-.dashboard-header h1 {
+.dashboard-title {
     color: var(--purple-900) !important;
-
-    margin: 0 !important;
 
     font-size: 2.2rem !important;
 
     font-weight: 800 !important;
+
+    line-height: 1.2 !important;
+
+    margin: 0 !important;
 }
 
 
-/* Header subtitle */
+/* Dashboard subtitle */
 
-.dashboard-header p {
+.dashboard-subtitle {
     color: var(--purple-700) !important;
 
-    margin-top: 8px !important;
+    margin-top: 10px !important;
+
+    font-size: 1rem !important;
+
+    font-weight: 500 !important;
+
+    line-height: 1.6 !important;
+}
+
+
+/* =========================================================
+   INSTRUCTION CARD
+   ========================================================= */
+
+.instruction-card {
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #faf5ff 100%
+    ) !important;
+
+    border: 1px solid var(--purple-200) !important;
+
+    border-left: 5px solid var(--purple-600) !important;
+
+    border-radius: 16px !important;
+
+    padding: 25px 30px !important;
+
+    margin-top: 20px !important;
+
+    margin-bottom: 20px !important;
+
+    box-shadow:
+        0 6px 20px rgba(76, 29, 149, 0.08) !important;
+}
+
+
+.instruction-card h2 {
+    color: var(--purple-800) !important;
+
+    margin-top: 0 !important;
+
+    margin-bottom: 15px !important;
+}
+
+
+.instruction-card ol {
+    color: var(--purple-900) !important;
 
     margin-bottom: 0 !important;
+
+    padding-left: 25px !important;
+}
+
+
+.instruction-card li {
+    margin-bottom: 10px !important;
+
+    color: #3b0764 !important;
 
     font-size: 1rem !important;
 }
 
 
 /* =========================================================
-   SECTION TITLES
+   SUBHEADERS
    ========================================================= */
 
 .stSubheader {
@@ -442,7 +481,7 @@ div[role="radiogroup"] label p {
 
 
 /* =========================================================
-   DATAFRAME
+   DATAFRAMES
    ========================================================= */
 
 [data-testid="stDataFrame"] {
@@ -455,7 +494,7 @@ div[role="radiogroup"] label p {
     overflow: hidden !important;
 
     box-shadow:
-        0px 4px 15px rgba(76, 29, 149, 0.06) !important;
+        0 4px 15px rgba(76, 29, 149, 0.06) !important;
 }
 
 
@@ -471,15 +510,12 @@ div[role="radiogroup"] label p {
     border-radius: 9px !important;
 }
 
-
 [data-baseweb="select"] > div:hover {
     border-color: var(--purple-500) !important;
 }
 
 
-/* =========================================================
-   MULTISELECT
-   ========================================================= */
+/* Selected tags */
 
 [data-baseweb="tag"] {
     background-color: var(--purple-100) !important;
@@ -512,10 +548,6 @@ div[role="radiogroup"] label p {
 }
 
 
-/* =========================================================
-   INFO ALERT
-   ========================================================= */
-
 [data-testid="stAlert"][kind="info"] {
     background-color: #f5f3ff !important;
 }
@@ -531,11 +563,9 @@ button[data-baseweb="tab"] {
     font-weight: 600 !important;
 }
 
-
 button[data-baseweb="tab"]:hover {
     color: var(--purple-600) !important;
 }
-
 
 button[data-baseweb="tab"][aria-selected="true"] {
     color: var(--purple-600) !important;
@@ -556,7 +586,6 @@ button[data-baseweb="tab"][aria-selected="true"] {
     border-radius: 12px !important;
 }
 
-
 [data-testid="stExpander"]:hover {
     border-color: var(--purple-400) !important;
 }
@@ -571,7 +600,6 @@ button[data-baseweb="tab"][aria-selected="true"] {
 
     border-radius: 10px !important;
 }
-
 
 [data-testid="stProgressBar"] > div > div {
     background: linear-gradient(
@@ -598,7 +626,7 @@ button[data-baseweb="tab"][aria-selected="true"] {
 
 
 /* =========================================================
-   CODE / SHA-256
+   CODE
    ========================================================= */
 
 code {
@@ -615,7 +643,7 @@ code {
 
 
 /* =========================================================
-   CHART
+   CHARTS
    ========================================================= */
 
 [data-testid="stVegaLiteChart"] {
@@ -628,12 +656,12 @@ code {
     padding: 10px !important;
 
     box-shadow:
-        0px 4px 15px rgba(76, 29, 149, 0.06) !important;
+        0 4px 15px rgba(76, 29, 149, 0.06) !important;
 }
 
 
 /* =========================================================
-   IMAGE
+   IMAGES
    ========================================================= */
 
 [data-testid="stImage"] {
@@ -666,14 +694,13 @@ a {
     font-weight: 600;
 }
 
-
 a:hover {
     color: var(--purple-900) !important;
 }
 
 
 /* =========================================================
-   SMALL TEXT
+   SMALL NOTES
    ========================================================= */
 
 .small-note {
@@ -686,11 +713,55 @@ a:hover {
 
 
 /* =========================================================
+   FOOTER
+   ========================================================= */
+
+.dashboard-footer {
+    text-align: center !important;
+
+    color: var(--purple-700) !important;
+
+    font-size: 13px !important;
+
+    padding: 15px !important;
+
+    margin-top: 10px !important;
+
+    line-height: 1.7 !important;
+}
+
+.dashboard-footer strong {
+    color: var(--purple-800) !important;
+
+    font-weight: 700 !important;
+}
+
+
+/* =========================================================
+   STREAMLIT HEADER
+   ========================================================= */
+
+header[data-testid="stHeader"] {
+    background-color: transparent !important;
+}
+
+
+/* =========================================================
+   HIDE STREAMLIT MENU
+   ========================================================= */
+
+#MainMenu {
+    visibility: hidden;
+}
+
+
+/* =========================================================
    SCROLLBAR
    ========================================================= */
 
 ::-webkit-scrollbar {
     width: 8px;
+
     height: 8px;
 }
 
@@ -710,34 +781,7 @@ a:hover {
 
 
 /* =========================================================
-   FOOTER
-   ========================================================= */
-
-footer {
-    visibility: hidden;
-}
-
-
-/* =========================================================
-   STREAMLIT HEADER
-   ========================================================= */
-
-header[data-testid="stHeader"] {
-    background-color: transparent !important;
-}
-
-
-/* =========================================================
-   MAIN MENU
-   ========================================================= */
-
-#MainMenu {
-    visibility: hidden;
-}
-
-
-/* =========================================================
-   SELECTION
+   TEXT SELECTION
    ========================================================= */
 
 ::selection {
@@ -748,13 +792,14 @@ header[data-testid="stHeader"] {
 
 
 /* =========================================================
-   RESPONSIVE
+   MOBILE / SMALL SCREEN
    ========================================================= */
 
 @media (max-width: 900px) {
 
     .block-container {
         padding-left: 1rem !important;
+
         padding-right: 1rem !important;
     }
 
@@ -762,8 +807,12 @@ header[data-testid="stHeader"] {
         padding: 22px !important;
     }
 
-    .dashboard-header h1 {
+    .dashboard-title {
         font-size: 1.8rem !important;
+    }
+
+    .dashboard-subtitle {
+        font-size: 0.95rem !important;
     }
 
     [data-testid="stMetric"] {
