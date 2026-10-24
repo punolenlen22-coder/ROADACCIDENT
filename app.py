@@ -134,14 +134,14 @@ with st.sidebar:
 st.markdown(
     """
     <div class="dashboard-header">
+        <div class="dashboard-title">
+            🚦 RACC Analytics Dashboard
+        </div>
 
-        <h1>🚦 RACC Analytics Dashboard</h1>
-
-        <p>
+        <div class="dashboard-subtitle">
             Road Accident Classification, Prediction,
             Forecasting and Analytics System
-        </p>
-
+        </div>
     </div>
     """,
     unsafe_allow_html=True
@@ -248,16 +248,21 @@ if not st.session_state.analysis_done:
         "then click **Run Complete Analysis**."
     )
 
-    st.markdown("### How to use the dashboard")
-
     st.markdown(
         """
-        1. Upload your **RACC CSV dataset**.
-        2. Click **Run Complete Analysis**.
-        3. Wait for all analysis modules to finish.
-        4. Use the **sidebar navigation** to explore the results.
-        5. Download the generated results from the **Downloads** page.
-        """
+        <div class="instruction-card">
+            <h2>How to use the dashboard</h2>
+
+            <ol>
+                <li>Upload your <b>RACC CSV dataset</b>.</li>
+                <li>Click <b>Run Complete Analysis</b>.</li>
+                <li>Wait for all analysis modules to finish.</li>
+                <li>Use the <b>sidebar navigation</b> to explore the results.</li>
+                <li>Download the generated results from the <b>Downloads</b> page.</li>
+            </ol>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     st.stop()
@@ -704,13 +709,8 @@ st.divider()
 
 st.markdown(
     """
-    <div style="
-        text-align:center;
-        color:#64748b;
-        font-size:13px;
-        padding:10px;
-    ">
-        🚦 RACC Analytics Dashboard
+    <div class="dashboard-footer">
+        <strong>🚦 RACC Analytics Dashboard</strong>
         <br>
         Road Accident Classification,
         Prediction & Forecasting System
