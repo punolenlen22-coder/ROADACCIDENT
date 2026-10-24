@@ -267,8 +267,45 @@ if not st.session_state.analysis_done:
 # LOAD ANALYSIS RESULTS
 # ============================================================
 
+# Check if the analysis results are really available.
+required_modules = [
+    "00_setup",
+    "01_cleaning",
+    "04_classification",
+    "05_prediction",
+    "06_forecasting",
+    "07_performance",
+    "09_exports"
+]
+
 state = core.STATE
 
+# This prevents KeyError when Streamlit session state
+# says analysis is done but the actual results are missing.
+missing_modules = [
+    module
+    for module in required_modules
+    if module not in state
+]
+
+if missing_modules:
+
+    st.session_state.analysis_done = False
+
+    st.warning(
+        "⚠️ The previous analysis session has expired or "
+        "the analysis results are no longer available."
+    )
+
+    st.info(
+        "Please upload your RACC CSV again and click "
+        "**Run Complete Analysis**."
+    )
+
+    st.stop()
+
+
+# Safely load the analysis results
 clean = state["01_cleaning"]["df"]
 
 perf = (
